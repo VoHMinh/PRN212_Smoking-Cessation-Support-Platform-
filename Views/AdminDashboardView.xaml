@@ -1,0 +1,884 @@
+<UserControl x:Class="QuitSmartApp.Views.AdminDashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:ui="http://schemas.modernwpf.com/2019"
+             mc:Ignorable="d"
+             d:DesignHeight="800"
+             d:DesignWidth="1400"
+             Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}">
+
+        <UserControl.Resources>
+                <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+
+                <!-- Chart Converters -->
+                <local:ChartBarWidthConverter xmlns:local="clr-namespace:QuitSmartApp.Converters"
+                                              x:Key="ChartBarWidthConverter"/>
+                <local:PieSliceConverter xmlns:local="clr-namespace:QuitSmartApp.Converters"
+                                         x:Key="PieSliceConverter"/>
+                <local:BoolToStatusConverter xmlns:local="clr-namespace:QuitSmartApp.Converters"
+                                             x:Key="BoolToStatusConverter"/>
+                <local:LineChartPointsConverter xmlns:local="clr-namespace:QuitSmartApp.Converters"
+                                                x:Key="LineChartPointsConverter"/>
+
+                <!-- Theme-aware Color Resources -->
+                <SolidColorBrush x:Key="PrimaryBrush"
+                                 Color="{DynamicResource SystemAccentColor}"/>
+                <SolidColorBrush x:Key="SuccessBrush"
+                                 Color="DarkGreen"/>
+                <SolidColorBrush x:Key="WarningBrush"
+                                 Color="DarkOrange"/>
+                <SolidColorBrush x:Key="DangerBrush"
+                                 Color="DarkRed"/>
+                <SolidColorBrush x:Key="InfoBrush"
+                                 Color="DarkBlue"/>
+                <SolidColorBrush x:Key="PurpleBrush"
+                                 Color="DarkMagenta"/>
+                <SolidColorBrush x:Key="TealBrush"
+                                 Color="DarkCyan"/>
+                <SolidColorBrush x:Key="ChartGridBrush"
+                                 Color="{DynamicResource SystemControlBackgroundListMediumColor}"/>
+                <SolidColorBrush x:Key="ChartLineBrush"
+                                 Color="{DynamicResource SystemControlForegroundBaseHighColor}"/>
+
+                <!-- Modern Card Styles -->
+                <Style x:Key="DashboardCardStyle"
+                       TargetType="Border">
+                        <Setter Property="Background"
+                                Value="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
+                        <Setter Property="BorderBrush"
+                                Value="{DynamicResource SystemControlBackgroundListMediumBrush}"/>
+                        <Setter Property="BorderThickness"
+                                Value="1"/>
+                        <Setter Property="CornerRadius"
+                                Value="16"/>
+                        <Setter Property="Padding"
+                                Value="24"/>
+                        <Setter Property="Margin"
+                                Value="12"/>
+                        <Setter Property="Effect">
+                                <Setter.Value>
+                                        <DropShadowEffect Color="Gray"
+                                                          Direction="270"
+                                                          ShadowDepth="4"
+                                                          BlurRadius="15"
+                                                          Opacity="0.2"/>
+                                </Setter.Value>
+                        </Setter>
+                </Style>
+
+                <Style x:Key="StatCardStyle"
+                       TargetType="Border">
+                        <Setter Property="Background"
+                                Value="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
+                        <Setter Property="BorderBrush"
+                                Value="{DynamicResource SystemControlBackgroundListMediumBrush}"/>
+                        <Setter Property="BorderThickness"
+                                Value="1"/>
+                        <Setter Property="CornerRadius"
+                                Value="12"/>
+                        <Setter Property="Padding"
+                                Value="20"/>
+                        <Setter Property="Margin"
+                                Value="8"/>
+                        <Setter Property="Effect">
+                                <Setter.Value>
+                                        <DropShadowEffect Color="Gray"
+                                                          Direction="270"
+                                                          ShadowDepth="3"
+                                                          BlurRadius="12"
+                                                          Opacity="0.25"/>
+                                </Setter.Value>
+                        </Setter>
+                </Style>
+
+                <Style x:Key="ChartCardStyle"
+                       TargetType="Border">
+                        <Setter Property="Background"
+                                Value="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
+                        <Setter Property="BorderBrush"
+                                Value="{DynamicResource SystemControlBackgroundListMediumBrush}"/>
+                        <Setter Property="BorderThickness"
+                                Value="1"/>
+                        <Setter Property="CornerRadius"
+                                Value="20"/>
+                        <Setter Property="Padding"
+                                Value="28"/>
+                        <Setter Property="Margin"
+                                Value="12"/>
+                        <Setter Property="Effect">
+                                <Setter.Value>
+                                        <DropShadowEffect Color="Gray"
+                                                          Direction="270"
+                                                          ShadowDepth="6"
+                                                          BlurRadius="20"
+                                                          Opacity="0.15"/>
+                                </Setter.Value>
+                        </Setter>
+                </Style>
+
+                <!-- Text Styles -->
+                <Style x:Key="HeaderTextStyle"
+                       TargetType="TextBlock">
+                        <Setter Property="FontSize"
+                                Value="32"/>
+                        <Setter Property="FontWeight"
+                                Value="Light"/>
+                        <Setter Property="Foreground"
+                                Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                        <Setter Property="HorizontalAlignment"
+                                Value="Center"/>
+                </Style>
+
+                <Style x:Key="StatValueStyle"
+                       TargetType="TextBlock">
+                        <Setter Property="FontSize"
+                                Value="32"/>
+                        <Setter Property="FontWeight"
+                                Value="Light"/>
+                        <Setter Property="Foreground"
+                                Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                        <Setter Property="HorizontalAlignment"
+                                Value="Center"/>
+                        <Setter Property="Margin"
+                                Value="0,8,0,4"/>
+                </Style>
+
+                <Style x:Key="StatLabelStyle"
+                       TargetType="TextBlock">
+                        <Setter Property="FontSize"
+                                Value="14"/>
+                        <Setter Property="FontWeight"
+                                Value="Medium"/>
+                        <Setter Property="Foreground"
+                                Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                        <Setter Property="HorizontalAlignment"
+                                Value="Center"/>
+                        <Setter Property="TextAlignment"
+                                Value="Center"/>
+                </Style>
+
+                <Style x:Key="ChartTitleStyle"
+                       TargetType="TextBlock">
+                        <Setter Property="FontSize"
+                                Value="18"/>
+                        <Setter Property="FontWeight"
+                                Value="SemiBold"/>
+                        <Setter Property="Margin"
+                                Value="0,0,0,20"/>
+                        <Setter Property="HorizontalAlignment"
+                                Value="Center"/>
+                </Style>
+
+                <Style x:Key="ActionButtonStyle"
+                       TargetType="Button">
+                        <Setter Property="Padding"
+                                Value="12,8"/>
+                        <Setter Property="FontSize"
+                                Value="13"/>
+                        <Setter Property="Margin"
+                                Value="4"/>
+                        <Setter Property="Cursor"
+                                Value="Hand"/>
+                        <Setter Property="BorderThickness"
+                                Value="0"/>
+                        <Setter Property="Effect">
+                                <Setter.Value>
+                                        <DropShadowEffect Color="Gray"
+                                                          Direction="270"
+                                                          ShadowDepth="2"
+                                                          BlurRadius="8"
+                                                          Opacity="0.2"/>
+                                </Setter.Value>
+                        </Setter>
+                        <Setter Property="Template">
+                                <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        CornerRadius="6"
+                                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                                        BorderThickness="{TemplateBinding BorderThickness}">
+                                                        <ContentPresenter HorizontalAlignment="Center"
+                                                                          VerticalAlignment="Center"
+                                                                          Margin="{TemplateBinding Padding}"/>
+                                                </Border>
+                                        </ControlTemplate>
+                                </Setter.Value>
+                        </Setter>
+                </Style>
+
+                <!-- DataGrid Styles -->
+                <Style x:Key="DataGridHeaderStyle"
+                       TargetType="DataGridColumnHeader">
+                        <Setter Property="Background"
+                                Value="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
+                        <Setter Property="Foreground"
+                                Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                        <Setter Property="FontWeight"
+                                Value="SemiBold"/>
+                        <Setter Property="BorderBrush"
+                                Value="{DynamicResource SystemControlBackgroundListMediumBrush}"/>
+                        <Setter Property="BorderThickness"
+                                Value="0,0,1,1"/>
+                        <Setter Property="Padding"
+                                Value="8,12"/>
+                </Style>
+
+                <Style x:Key="DataGridCellStyle"
+                       TargetType="DataGridCell">
+                        <Setter Property="Background"
+                                Value="Transparent"/>
+                        <Setter Property="Foreground"
+                                Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                        <Setter Property="BorderBrush"
+                                Value="Transparent"/>
+                        <Setter Property="BorderThickness"
+                                Value="0"/>
+                        <Setter Property="FocusVisualStyle"
+                                Value="{x:Null}"/>
+                        <Style.Triggers>
+                                <Trigger Property="IsSelected"
+                                         Value="True">
+                                        <Setter Property="Background"
+                                                Value="{DynamicResource SystemControlHighlightBrush}"/>
+                                        <Setter Property="Foreground"
+                                                Value="{DynamicResource SystemControlHighlightTextBrush}"/>
+                                </Trigger>
+                        </Style.Triggers>
+                </Style>
+
+                <Style x:Key="DataGridRowStyle"
+                       TargetType="DataGridRow">
+                        <Setter Property="Background"
+                                Value="Transparent"/>
+                        <Setter Property="Foreground"
+                                Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                        <Style.Triggers>
+                                <Trigger Property="IsSelected"
+                                         Value="True">
+                                        <Setter Property="Background"
+                                                Value="{DynamicResource SystemControlHighlightBrush}"/>
+                                        <Setter Property="Foreground"
+                                                Value="{DynamicResource SystemControlHighlightTextBrush}"/>
+                                </Trigger>
+                                <Trigger Property="IsMouseOver"
+                                         Value="True">
+                                        <Setter Property="Background"
+                                                Value="{DynamicResource SystemControlBackgroundListMediumBrush}"/>
+                                </Trigger>
+                        </Style.Triggers>
+                </Style>
+
+                <!-- Chart Templates -->
+                <DataTemplate x:Key="BarChartTemplate">
+                        <Grid Margin="0,6">
+                                <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="80"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0"
+                                           Text="{Binding Label}"
+                                           FontSize="12"
+                                           VerticalAlignment="Center"
+                                           FontWeight="Medium"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+
+                                <Grid Grid.Column="1"
+                                      Margin="12,0">
+                                        <Rectangle Fill="{DynamicResource SystemControlBackgroundListMediumBrush}"
+                                                   Height="20"
+                                                   RadiusX="10"
+                                                   RadiusY="10"/>
+                                        <Rectangle Fill="{Binding Color}"
+                                                   Height="20"
+                                                   RadiusX="10"
+                                                   RadiusY="10"
+                                                   Width="{Binding Value, Converter={StaticResource ChartBarWidthConverter}}"/>
+                                </Grid>
+
+                                <TextBlock Grid.Column="2"
+                                           Text="{Binding Value, StringFormat='{}{0:F0}'}"
+                                           FontSize="12"
+                                           FontWeight="Bold"
+                                           HorizontalAlignment="Right"
+                                           VerticalAlignment="Center"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                        </Grid>
+                </DataTemplate>
+
+                <DataTemplate x:Key="ColumnChartTemplate">
+                        <Grid Margin="8,0"
+                              Width="60">
+                                <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Grid Grid.Row="0"
+                                      Height="120"
+                                      VerticalAlignment="Bottom">
+                                        <Rectangle Fill="{DynamicResource SystemControlBackgroundListMediumBrush}"
+                                                   RadiusX="4"
+                                                   RadiusY="4"/>
+                                        <Rectangle Fill="{Binding Color}"
+                                                   RadiusX="4"
+                                                   RadiusY="4"
+                                                   VerticalAlignment="Bottom"
+                                                   Height="{Binding Value, Converter={StaticResource ChartBarWidthConverter}}"/>
+                                        <TextBlock Text="{Binding Value, StringFormat='{}{0:F0}'}"
+                                                   FontSize="10"
+                                                   FontWeight="Bold"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Top"
+                                                   Margin="0,4,0,0"
+                                                   Foreground="{DynamicResource SystemControlHighlightTextBrush}"/>
+                                </Grid>
+
+                                <TextBlock Grid.Row="1"
+                                           Text="{Binding Label}"
+                                           FontSize="10"
+                                           HorizontalAlignment="Center"
+                                           Margin="0,8,0,0"
+                                           TextAlignment="Center"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                        </Grid>
+                </DataTemplate>
+
+                <DataTemplate x:Key="PieChartItemTemplate">
+                        <StackPanel Orientation="Horizontal"
+                                    Margin="0,4">
+                                <Ellipse Width="12"
+                                         Height="12"
+                                         Fill="{Binding Color}"
+                                         Margin="0,0,8,0"/>
+                                <TextBlock Text="{Binding Label}"
+                                           FontSize="12"
+                                           VerticalAlignment="Center"
+                                           Margin="0,0,8,0"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                                <TextBlock Text="{Binding Value, StringFormat='{}{0:F1}%'}"
+                                           FontSize="12"
+                                           FontWeight="Bold"
+                                           VerticalAlignment="Center"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                        </StackPanel>
+                </DataTemplate>
+        </UserControl.Resources>
+
+        <Grid>
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+                        <StackPanel MaxWidth="1600"
+                                    Margin="24,20">
+
+                                <!-- Header -->
+                                <StackPanel Margin="0,20,0,32">
+                                        <StackPanel Orientation="Horizontal"
+                                                    HorizontalAlignment="Center"
+                                                    Margin="0,0,0,16">
+                                                <TextBlock Text="🛠️"
+                                                           FontSize="36"
+                                                           Margin="0,0,20,0"/>
+                                                <TextBlock Text="Bảng Điều Khiển Admin QuitSmart"
+                                                           Style="{StaticResource HeaderTextStyle}"
+                                                           VerticalAlignment="Center"/>
+                                        </StackPanel>
+
+                                        <TextBlock Text="Hệ thống quản lý và thống kê toàn diện với biểu đồ đa dạng"
+                                                   FontSize="16"
+                                                   Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                                                   HorizontalAlignment="Center"
+                                                   Margin="0,0,0,24"/>
+
+                                        <!-- Action Buttons -->
+                                        <StackPanel Orientation="Horizontal"
+                                                    HorizontalAlignment="Center">
+                                                <Button Content="🔄 Làm mới dữ liệu"
+                                                        Background="#3498DB"
+                                                        Foreground="White"
+                                                        Style="{StaticResource ActionButtonStyle}"
+                                                        Padding="20,10"
+                                                        FontSize="14"
+                                                        Command="{Binding RefreshDataCommand}"
+                                                        Margin="0,0,16,0"/>
+                                                <Button Content="🚪 Đăng xuất"
+                                                        Background="DarkRed"
+                                                        Foreground="White"
+                                                        Style="{StaticResource ActionButtonStyle}"
+                                                        Padding="20,10"
+                                                        FontSize="14"
+                                                        Command="{Binding LogoutCommand}"/>
+                                        </StackPanel>
+                                </StackPanel>
+
+                                <!-- Quick Statistics Cards -->
+                                <Grid Margin="0,0,0,24">
+                                        <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <Border Grid.Column="0"
+                                                Style="{StaticResource StatCardStyle}">
+                                                <StackPanel>
+                                                        <TextBlock Text="👥"
+                                                                   FontSize="32"
+                                                                   HorizontalAlignment="Center"
+                                                                   Margin="0,0,0,8"/>
+                                                        <TextBlock Text="{Binding TotalUsers}"
+                                                                   Style="{StaticResource StatValueStyle}"
+                                                                   Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                                                        <TextBlock Text="Tổng người dùng"
+                                                                   Style="{StaticResource StatLabelStyle}"/>
+                                                </StackPanel>
+                                        </Border>
+
+                                        <Border Grid.Column="1"
+                                                Style="{StaticResource StatCardStyle}">
+                                                <StackPanel>
+                                                        <TextBlock Text="✅"
+                                                                   FontSize="32"
+                                                                   HorizontalAlignment="Center"
+                                                                   Margin="0,0,0,8"/>
+                                                        <TextBlock Text="{Binding ActiveUsers}"
+                                                                   Style="{StaticResource StatValueStyle}"
+                                                                   Foreground="DarkGreen"/>
+                                                        <TextBlock Text="Người dùng hoạt động"
+                                                                   Style="{StaticResource StatLabelStyle}"/>
+                                                </StackPanel>
+                                        </Border>
+
+                                        <Border Grid.Column="2"
+                                                Style="{StaticResource StatCardStyle}">
+                                                <StackPanel>
+                                                        <TextBlock Text="💰"
+                                                                   FontSize="32"
+                                                                   HorizontalAlignment="Center"
+                                                                   Margin="0,0,0,8"/>
+                                                        <TextBlock Text="{Binding TotalMoneySaved, StringFormat='{}{0:N0}'}"
+                                                                   Style="{StaticResource StatValueStyle}"
+                                                                   Foreground="DarkOrange"
+                                                                   FontSize="24"/>
+                                                        <TextBlock Text="Tiền tiết kiệm (VNĐ)"
+                                                                   Margin="0,12"
+                                                                   Style="{StaticResource StatLabelStyle}"/>
+                                                </StackPanel>
+                                        </Border>
+
+                                        <Border Grid.Column="3"
+                                                Style="{StaticResource StatCardStyle}">
+                                                <StackPanel>
+                                                        <TextBlock Text="📅"
+                                                                   FontSize="32"
+                                                                   HorizontalAlignment="Center"
+                                                                   Margin="0,0,0,8"/>
+                                                        <TextBlock Text="{Binding AverageDaysQuit}"
+                                                                   Style="{StaticResource StatValueStyle}"
+                                                                   Foreground="{StaticResource PurpleBrush}"/>
+                                                        <TextBlock Text="Trung bình ngày cai"
+                                                                   Style="{StaticResource StatLabelStyle}"/>
+                                                </StackPanel>
+                                        </Border>
+
+                                        <Border Grid.Column="4"
+                                                Style="{StaticResource StatCardStyle}">
+                                                <StackPanel>
+                                                        <TextBlock Text="🏆"
+                                                                   FontSize="32"
+                                                                   HorizontalAlignment="Center"
+                                                                   Margin="0,0,0,8"/>
+                                                        <TextBlock Text="{Binding TotalBadgesAwarded}"
+                                                                   Style="{StaticResource StatValueStyle}"
+                                                                   Foreground="{StaticResource WarningBrush}"/>
+                                                        <TextBlock Text="Huy hiệu đã trao"
+                                                                   Style="{StaticResource StatLabelStyle}"/>
+                                                </StackPanel>
+                                        </Border>
+
+                                        <Border Grid.Column="5"
+                                                Style="{StaticResource StatCardStyle}">
+                                                <StackPanel>
+                                                        <TextBlock Text="📈"
+                                                                   FontSize="32"
+                                                                   HorizontalAlignment="Center"
+                                                                   Margin="0,0,0,8"/>
+                                                        <TextBlock Text="{Binding NewUsersThisMonth}"
+                                                                   Style="{StaticResource StatValueStyle}"
+                                                                   Foreground="{StaticResource TealBrush}"/>
+                                                        <TextBlock Text="Người dùng mới tháng này"
+                                                                   Style="{StaticResource StatLabelStyle}"/>
+                                                </StackPanel>
+                                        </Border>
+                                </Grid>
+
+                                <!-- Advanced Charts Section -->
+                                <Grid Margin="0,0,0,24">
+                                        <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <!-- First Row of Charts -->
+                                        <Grid Grid.Row="0">
+                                                <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="1*"/>
+                                                        <ColumnDefinition Width="1*"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <!-- Gender Distribution Pie Chart -->
+                                                <Border Grid.Column="0"
+                                                        Style="{StaticResource ChartCardStyle}">
+                                                        <StackPanel>
+                                                                <TextBlock Text="👫 Phân Bố Giới Tính"
+                                                                           Style="{StaticResource ChartTitleStyle}"
+                                                                           Foreground="{StaticResource PrimaryBrush}"/>
+
+                                                                <Grid>
+                                                                        <Grid.ColumnDefinitions>
+                                                                                <ColumnDefinition Width="200"/>
+                                                                                <ColumnDefinition Width="*"/>
+                                                                        </Grid.ColumnDefinitions>
+
+                                                                        <!-- Pie Chart Simulation -->
+                                                                        <Grid Grid.Column="0"
+                                                                              Width="160"
+                                                                              Height="160"
+                                                                              HorizontalAlignment="Center">
+                                                                                <Ellipse Fill="#3498DB"
+                                                                                         Width="160"
+                                                                                         Height="160"/>
+                                                                                <Path Fill="#E74C3C"
+                                                                                      Data="M 80,80 L 80,0 A 80,80 0 0,1 136.4,56.4 Z"/>
+                                                                                <Path Fill="#F39C12"
+                                                                                      Data="M 80,80 L 136.4,56.4 A 80,80 0 0,1 113.1,143.9 Z"/>
+                                                                        </Grid>
+
+                                                                        <!-- Legend -->
+                                                                        <StackPanel Grid.Column="1"
+                                                                                    VerticalAlignment="Center"
+                                                                                    Margin="20,0,0,0">
+                                                                                <ItemsControl ItemsSource="{Binding GenderDistribution}"
+                                                                                              ItemTemplate="{StaticResource PieChartItemTemplate}"/>
+                                                                        </StackPanel>
+                                                                </Grid>
+                                                        </StackPanel>
+                                                </Border>
+
+                                                <!-- Age Group Column Chart -->
+                                                <Border Grid.Column="1"
+                                                        Style="{StaticResource ChartCardStyle}">
+                                                        <StackPanel>
+                                                                <TextBlock Text="📊 Phân Bố Độ Tuổi"
+                                                                           Style="{StaticResource ChartTitleStyle}"
+                                                                           Foreground="{StaticResource SuccessBrush}"/>
+
+                                                                <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                                                                              VerticalScrollBarVisibility="Disabled">
+                                                                        <ItemsControl ItemsSource="{Binding AgeGroupDistribution}">
+                                                                                <ItemsControl.ItemsPanel>
+                                                                                        <ItemsPanelTemplate>
+                                                                                                <StackPanel Orientation="Horizontal"
+                                                                                                            HorizontalAlignment="Center"/>
+                                                                                        </ItemsPanelTemplate>
+                                                                                </ItemsControl.ItemsPanel>
+                                                                                <ItemsControl.ItemTemplate>
+                                                                                        <StaticResource ResourceKey="ColumnChartTemplate"/>
+                                                                                </ItemsControl.ItemTemplate>
+                                                                        </ItemsControl>
+                                                                </ScrollViewer>
+                                                        </StackPanel>
+                                                </Border>
+                                        </Grid>
+
+                                        <!-- Second Row of Charts -->
+                                        <Grid Grid.Row="1"
+                                              Margin="0,12,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="1*"/>
+                                                        <ColumnDefinition Width="1*"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <!-- Success Rate Line Chart -->
+                                                <Border Grid.Column="0"
+                                                        Style="{StaticResource ChartCardStyle}">
+                                                        <StackPanel>
+                                                                <TextBlock Text="📈 Tỷ Lệ Thành Công Theo Thời Gian"
+                                                                           Style="{StaticResource ChartTitleStyle}"
+                                                                           Foreground="{StaticResource DangerBrush}"/>
+
+                                                                <Canvas Height="240"
+                                                                        Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+                                                                        Margin="0,10">
+                                                                        <!-- Grid Lines -->
+                                                                        <Line X1="0"
+                                                                              Y1="50"
+                                                                              X2="400"
+                                                                              Y2="50"
+                                                                              Stroke="{StaticResource ChartGridBrush}"
+                                                                              StrokeThickness="1"/>
+                                                                        <Line X1="0"
+                                                                              Y1="100"
+                                                                              X2="400"
+                                                                              Y2="100"
+                                                                              Stroke="{StaticResource ChartGridBrush}"
+                                                                              StrokeThickness="1"/>
+                                                                        <Line X1="0"
+                                                                              Y1="150"
+                                                                              X2="400"
+                                                                              Y2="150"
+                                                                              Stroke="{StaticResource ChartGridBrush}"
+                                                                              StrokeThickness="1"/>
+
+                                                                        <!-- Real Data Line Chart -->
+                                                                        <Polyline Points="{Binding SuccessRateLineChartData, Converter={StaticResource LineChartPointsConverter}}"
+                                                                                  Stroke="{StaticResource DangerBrush}"
+                                                                                  StrokeThickness="3"
+                                                                                  Fill="Transparent"/>
+
+                                                                        <!-- Real Data Points -->
+                                                                        <ItemsControl ItemsSource="{Binding SuccessRateLineChartData}">
+                                                                                <ItemsControl.ItemsPanel>
+                                                                                        <ItemsPanelTemplate>
+                                                                                                <Canvas/>
+                                                                                        </ItemsPanelTemplate>
+                                                                                </ItemsControl.ItemsPanel>
+                                                                                <ItemsControl.ItemContainerStyle>
+                                                                                        <Style TargetType="ContentPresenter">
+                                                                                                <Setter Property="Canvas.Left"
+                                                                                                        Value="{Binding X}"/>
+                                                                                                <Setter Property="Canvas.Top"
+                                                                                                        Value="{Binding Y}"/>
+                                                                                        </Style>
+                                                                                </ItemsControl.ItemContainerStyle>
+                                                                                <ItemsControl.ItemTemplate>
+                                                                                        <DataTemplate>
+                                                                                                <StackPanel>
+                                                                                                        <Ellipse Width="10"
+                                                                                                                 Height="10"
+                                                                                                                 Fill="{StaticResource DangerBrush}"
+                                                                                                                 Margin="-5,-5,0,0"/>
+                                                                                                        <TextBlock Text="{Binding Value}"
+                                                                                                                   FontSize="9"
+                                                                                                                   FontWeight="Bold"
+                                                                                                                   Foreground="{StaticResource DangerBrush}"
+                                                                                                                   HorizontalAlignment="Center"
+                                                                                                                   Margin="0,-20,0,0"/>
+                                                                                                </StackPanel>
+                                                                                        </DataTemplate>
+                                                                                </ItemsControl.ItemTemplate>
+                                                                        </ItemsControl>
+
+                                                                        <!-- X-Axis Labels -->
+                                                                        <ItemsControl ItemsSource="{Binding SuccessRateLineChartData}">
+                                                                                <ItemsControl.ItemsPanel>
+                                                                                        <ItemsPanelTemplate>
+                                                                                                <Canvas/>
+                                                                                        </ItemsPanelTemplate>
+                                                                                </ItemsControl.ItemsPanel>
+                                                                                <ItemsControl.ItemContainerStyle>
+                                                                                        <Style TargetType="ContentPresenter">
+                                                                                                <Setter Property="Canvas.Left"
+                                                                                                        Value="{Binding X}"/>
+                                                                                                <Setter Property="Canvas.Top"
+                                                                                                        Value="210"/>
+                                                                                        </Style>
+                                                                                </ItemsControl.ItemContainerStyle>
+                                                                                <ItemsControl.ItemTemplate>
+                                                                                        <DataTemplate>
+                                                                                                <TextBlock Text="{Binding Label}"
+                                                                                                           FontSize="9"
+                                                                                                           FontWeight="Medium"
+                                                                                                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                                                                                                           HorizontalAlignment="Center"
+                                                                                                           Margin="-20,0,0,0"
+                                                                                                           TextAlignment="Center"/>
+                                                                                        </DataTemplate>
+                                                                                </ItemsControl.ItemTemplate>
+                                                                        </ItemsControl>
+                                                                </Canvas>
+
+                                                                <StackPanel Orientation="Horizontal"
+                                                                            HorizontalAlignment="Center"
+                                                                            Margin="0,10,0,0">
+                                                                        <TextBlock Text="7 ngày: "
+                                                                                   FontSize="12"
+                                                                                   Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                                                                        <TextBlock Text="{Binding SuccessRateLineChartData[0].Value}"
+                                                                                   FontSize="12"
+                                                                                   FontWeight="Bold"
+                                                                                   Foreground="{StaticResource DangerBrush}"/>
+                                                                        <TextBlock Text=" | 30 ngày: "
+                                                                                   FontSize="12"
+                                                                                   Margin="12,0,0,0"
+                                                                                   Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                                                                        <TextBlock Text="{Binding SuccessRateLineChartData[1].Value}"
+                                                                                   FontSize="12"
+                                                                                   FontWeight="Bold"
+                                                                                   Foreground="{StaticResource DangerBrush}"/>
+                                                                        <TextBlock Text=" | 90 ngày: "
+                                                                                   FontSize="12"
+                                                                                   Margin="12,0,0,0"
+                                                                                   Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                                                                        <TextBlock Text="{Binding SuccessRateLineChartData[2].Value}"
+                                                                                   FontSize="12"
+                                                                                   FontWeight="Bold"
+                                                                                   Foreground="{StaticResource DangerBrush}"/>
+                                                                        <TextBlock Text=" | 365 ngày: "
+                                                                                   FontSize="12"
+                                                                                   Margin="12,0,0,0"
+                                                                                   Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                                                                        <TextBlock Text="{Binding SuccessRateLineChartData[4].Value}"
+                                                                                   FontSize="12"
+                                                                                   FontWeight="Bold"
+                                                                                   Foreground="{StaticResource DangerBrush}"/>
+                                                                </StackPanel>
+                                                        </StackPanel>
+                                                </Border>
+
+                                                <!-- Activity Overview Horizontal Bar Chart -->
+                                                <Border Grid.Column="1"
+                                                        Style="{StaticResource ChartCardStyle}">
+                                                        <StackPanel>
+                                                                <TextBlock Text="📋 Tổng Quan Hoạt Động"
+                                                                           Style="{StaticResource ChartTitleStyle}"
+                                                                           Foreground="{StaticResource PurpleBrush}"/>
+
+                                                                <ItemsControl ItemsSource="{Binding SuccessRateByDays}"
+                                                                              ItemTemplate="{StaticResource BarChartTemplate}"
+                                                                              Margin="0,10"/>
+
+                                                                <Grid Margin="0,10,0,0">
+                                                                        <Grid.ColumnDefinitions>
+                                                                                <ColumnDefinition Width="*"/>
+                                                                                <ColumnDefinition Width="*"/>
+                                                                        </Grid.ColumnDefinitions>
+
+                                                                        <StackPanel Grid.Column="0"
+                                                                                    HorizontalAlignment="Center">
+                                                                                <TextBlock Text="{Binding ActiveUsersPercentage, StringFormat='{}{0:F1}%'}"
+                                                                                           FontSize="20"
+                                                                                           FontWeight="Bold"
+                                                                                           Foreground="{StaticResource SuccessBrush}"/>
+                                                                                <TextBlock Text="Hoạt động"
+                                                                                           FontSize="12"
+                                                                                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                                                                        </StackPanel>
+
+                                                                        <StackPanel Grid.Column="1"
+                                                                                    HorizontalAlignment="Center">
+                                                                                <TextBlock Text="{Binding InactiveUsersPercentage, StringFormat='{}{0:F1}%'}"
+                                                                                           FontSize="20"
+                                                                                           FontWeight="Bold"
+                                                                                           Foreground="{StaticResource DangerBrush}"/>
+                                                                                <TextBlock Text="Không hoạt động"
+                                                                                           FontSize="12"
+                                                                                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                                                                        </StackPanel>
+                                                                </Grid>
+                                                        </StackPanel>
+                                                </Border>
+                                        </Grid>
+                                </Grid>
+
+                                <!-- User Management Table -->
+                                <Border Style="{StaticResource DashboardCardStyle}">
+                                        <StackPanel>
+                                                <TextBlock Text="👥 Quản Lý Người Dùng"
+                                                           Style="{StaticResource ChartTitleStyle}"
+                                                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+
+                                                <DataGrid ItemsSource="{Binding Users}"
+                                                          SelectedItem="{Binding SelectedUser}"
+                                                          AutoGenerateColumns="False"
+                                                          CanUserAddRows="False"
+                                                          GridLinesVisibility="Horizontal"
+                                                          HeadersVisibility="Column"
+                                                          Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}"
+                                                          AlternatingRowBackground="{DynamicResource SystemControlBackgroundAltHighBrush}"
+                                                          Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                                                          ColumnHeaderStyle="{StaticResource DataGridHeaderStyle}"
+                                                          CellStyle="{StaticResource DataGridCellStyle}"
+                                                          RowStyle="{StaticResource DataGridRowStyle}"
+                                                          RowHeight="45"
+                                                          FontSize="13">
+                                                        <DataGrid.Columns>
+                                                                <DataGridTextColumn Header="Họ tên"
+                                                                                    Binding="{Binding FullName}"
+                                                                                    Width="150"/>
+                                                                <DataGridTextColumn Header="Username"
+                                                                                    Binding="{Binding Username}"
+                                                                                    Width="120"/>
+                                                                <DataGridTextColumn Header="Email"
+                                                                                    Binding="{Binding Email}"
+                                                                                    Width="180"/>
+                                                                <DataGridTextColumn Header="Giới tính"
+                                                                                    Binding="{Binding Gender}"
+                                                                                    Width="80"/>
+                                                                <DataGridTextColumn Header="Ngày cai"
+                                                                                    Binding="{Binding TotalDaysQuit}"
+                                                                                    Width="80"/>
+                                                                <DataGridTextColumn Header="Tiền tiết kiệm"
+                                                                                    Binding="{Binding TotalMoneySaved, StringFormat='{}{0:N0}'}"
+                                                                                    Width="120"/>
+                                                                <DataGridTextColumn Header="Trạng thái"
+                                                                                    Binding="{Binding IsActive, Converter={StaticResource BoolToStatusConverter}}"
+                                                                                    Width="100"/>
+
+                                                                <DataGridTemplateColumn Header="Hành động"
+                                                                                        Width="400">
+                                                                        <DataGridTemplateColumn.CellTemplate>
+                                                                                <DataTemplate>
+                                                                                        <StackPanel Orientation="Horizontal"
+                                                                                                    HorizontalAlignment="Center">
+                                                                                                <Button Content="👁️ Chi tiết"
+                                                                                                        Background="{DynamicResource SystemAccentBrush}"
+                                                                                                        Foreground="{DynamicResource SystemControlHighlightTextBrush}"
+                                                                                                        Style="{StaticResource ActionButtonStyle}"
+                                                                                                        Command="{Binding DataContext.OpenUserDetailsCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                                                        CommandParameter="{Binding}"/>
+                                                                                                <Button Content="📋 Nhật ký"
+                                                                                                        Background="DarkGreen"
+                                                                                                        Foreground="{DynamicResource SystemControlHighlightTextBrush}"
+                                                                                                        Style="{StaticResource ActionButtonStyle}"
+                                                                                                        Command="{Binding DataContext.OpenUserLogsCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                                                        CommandParameter="{Binding}"/>
+                                                                                        </StackPanel>
+                                                                                </DataTemplate>
+                                                                        </DataGridTemplateColumn.CellTemplate>
+                                                                </DataGridTemplateColumn>
+                                                        </DataGrid.Columns>
+                                                </DataGrid>
+                                        </StackPanel>
+                                </Border>
+
+                                <!-- Loading Indicator -->
+                                <Border Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                        Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}"
+                                        Opacity="0.8"
+                                        Margin="0,20">
+                                        <StackPanel HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center"
+                                                    Margin="20">
+                                                <ProgressBar IsIndeterminate="True"
+                                                             Width="200"
+                                                             Height="4"
+                                                             Margin="0,0,0,16"/>
+                                                <TextBlock Text="Đang tải dữ liệu..."
+                                                           FontSize="16"
+                                                           HorizontalAlignment="Center"
+                                                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                                        </StackPanel>
+                                </Border>
+
+                        </StackPanel>
+                </ScrollViewer>
+        </Grid>
+</UserControl>
+
