@@ -1,0 +1,1 @@
+![Slider](https://github.com/Kinnara/ModernWpf/blob/master/docs/images/Slider.png)

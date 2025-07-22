@@ -1,0 +1,1 @@
+![Menu](https://github.com/Kinnara/ModernWpf/blob/master/docs/images/Menu.png)

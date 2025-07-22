@@ -1,0 +1,1 @@
+![GroupBox](https://github.com/Kinnara/ModernWpf/blob/master/docs/images/GroupBox.png)

@@ -1,0 +1,1 @@
+![Expander](https://github.com/Kinnara/ModernWpf/blob/master/docs/images/Expander.png)
